@@ -3,6 +3,7 @@
     (:import org.oldcode.urt.MessageResponse)
 	(:require 
 		[org.oldcode.urt.server-detail :as sd]
+		[org.oldcode.urt.server-query :as sq]
 		[aleph.udp :as udp]
 		[manifold.stream :as s]
 		[manifold.deferred :as d]
@@ -38,7 +39,7 @@
 ;; urtctf east
 (def addr (byte-array [
 	(unchecked-byte 216)
-	(byte 52)
+	(unchecked-byte 52)
 	(unchecked-byte 148)
 	(unchecked-byte 134)]))
 
@@ -46,6 +47,7 @@
 	"I don't do a whole lot ... yet."
 	[& args]
 	(println "Hello, World!")
+	(sq/test2)
 	(let [qr (new MessageResponse addr 27961)]
 		(.sendMessage qr "getstatus")
 		(def r (.getResponse qr))
