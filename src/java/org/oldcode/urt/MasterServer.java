@@ -13,9 +13,10 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 public class MasterServer {
 
     //private String host = "master.urbanterror.info";
+    //master.urbanterror.info:27900 
     byte[] addr;// = new byte[4];
-    private int port = 27950;
-
+    //private int port = 27950;
+    private int port = 27900;
     public MasterServer() {
         // use a static initializer:
         this.addr = new byte[4];
