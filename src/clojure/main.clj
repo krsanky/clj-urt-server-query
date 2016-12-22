@@ -18,5 +18,7 @@
 
 (defn -main [& args]
 ;;	(query-urtctf))
-	(sq/get-status "216.52.148.134" 27961))
+;;	(def status (sq/get-status "216.52.148.134" 27961))
+	(def status (sq/get-status-urtctf))
+	(println status))
 

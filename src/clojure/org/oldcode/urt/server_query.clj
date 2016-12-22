@@ -1,5 +1,6 @@
 (ns org.oldcode.urt.server-query 
 	(:gen-class)
+	(:require [clojure.string :as str])
 	(:import 
 		(java.net 
 			DatagramSocket 
@@ -12,42 +13,37 @@
 
 (def magic (byte-array (map unchecked-byte (repeat 4 0xff))))
 
+(defn send-msg [socket msg host port]
+	(let [msg' (->> msg 
+				 (.getBytes)
+				 (concat magic)
+				 (byte-array))
+          host' (InetAddress/getByName host)
+          packet (new DatagramPacket msg' (count msg') host' port)]
+		(.send socket packet)))
+		
 (defn get-status [host port] 
-	(let [msg-raw (.getBytes "getstatus")
-	      msg (byte-array (concat magic msg-raw))
-          host- (InetAddress/getByName host)
-	      send-socket (new DatagramSocket)
-          send-packet (new DatagramPacket msg (count msg) host- port)]
-		(.send send-socket send-packet)
+	(let [socket (new DatagramSocket)
+	      host' (InetAddress/getByName host)]
+		(send-msg socket "getstatus" host port)
 
-;;         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-;;baos.write(dpacket.getData(), 0, dpacket.getLength());
-
-		(let [buffer (byte-array 2048)
-              dpacket (new DatagramPacket buffer (count buffer))]
-
+		(let [buffer (byte-array 65507)
+              dpacket (new DatagramPacket buffer (count buffer) host' port)]
  
-			(loop [] 
-				(let [stop (atom false)]
-					(println "pre-try...")
-					(try 
-						(let [dpacket (new DatagramPacket buffer (count buffer) host- port)]
-							;; Decrease value speeds things up, increase slows things down.
-							(.setSoTimeout send-socket 10000)
-							;; this is where we should preempt check for the exc. case:
-							(.receive send-socket dpacket)
- 
-							(println (new String (.getData dpacket) 0 (.getLength dpacket))))
-						(catch IOException e ;;we shouldn't use an exception for flow control
-							(do					 
-						    	(println (str "EXC: " (.getMessage e)))
-							 	(swap! stop #(or % true)))))
-					(if-not stop (recur)))))))
-             
+			;; Decrease value speeds things up, increase slows things down.
+			(.setSoTimeout socket 10000)
+			;; this is where we should preempt check for the exc. case:
+			(.receive socket dpacket)
+			(new String (.getData dpacket) 0 (.getLength dpacket)))))
 
-;;         //System.out.println(baos);
-;;         byte[] bytes = baos.toByteArray();
-;;         return bytes;
- 
-		;;	 (defn [old-val]
-		;;		(or old-val true))			
+(defn get-status-urtctf []
+	(get-status "216.52.148.134" 27961))
+
+(defn get-vars [status-response]
+	(as-> status-response v 
+		(str/split v #"\n")
+		(get v 1)
+		(str/replace-first v #"\\" "")
+		(str/split v #"\\")
+		(apply hash-map v)))		
+
