@@ -41,9 +41,30 @@
 
 (defn get-vars [status-response]
 	(as-> status-response v 
-		(str/split v #"\n")
+		(str/split-lines v)
 		(get v 1)
 		(str/replace-first v #"\\" "")
 		(str/split v #"\\")
 		(apply hash-map v)))		
+
+(defn strip-quotes [s]
+	(if (and (.startsWith s "\"")
+             (.endsWith s "\""))
+		(subs s 1 (dec (count s)))
+		s))
+
+(defn reorder-player-list [[score ping name-]]
+	[(strip-quotes name-) score ping])
+
+(defn get-players [status-response]
+	(as-> status-response v
+		(str/split-lines v)
+		(drop 2 v)
+		(map #(str/split % #" ") v)
+		(map reorder-player-list v)))
+
+(defn pp-player [player-list] 
+	(println (str (first player-list) " " (second player-list) " " (nth player-list 2))))
+(defn pp-players [players-list] 
+	(doseq [p players-list] (pp-player p)))
 
