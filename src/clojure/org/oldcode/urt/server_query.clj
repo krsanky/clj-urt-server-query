@@ -40,12 +40,12 @@
 	(get-status "216.52.148.134" 27961))
 
 (defn get-vars [status-response]
-	(as-> status-response v 
-		(str/split-lines v)
-		(get v 1)
-		(str/replace-first v #"\\" "")
-		(str/split v #"\\")
-		(apply hash-map v)))		
+	(-> status-response  
+		(str/split-lines)
+		(get 1)
+		(str/replace-first #"\\" "")
+		(str/split #"\\")
+		(apply hash-map)))		
 
 (defn strip-quotes [s]
 	(if (and (.startsWith s "\"")
@@ -57,11 +57,11 @@
 	[(strip-quotes name-) score ping])
 
 (defn get-players [status-response]
-	(as-> status-response v
-		(str/split-lines v)
-		(drop 2 v)
-		(map #(str/split % #" ") v)
-		(map reorder-player-list v)))
+	(->> status-response 
+		(str/split-lines)
+		(drop 2)
+		(map #(str/split % #" "))
+		(map reorder-player-list)))
 
 (defn pp-player [player-list] 
 	(println (str (first player-list) " " (second player-list) " " (nth player-list 2))))
