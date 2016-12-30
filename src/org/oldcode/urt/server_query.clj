@@ -5,11 +5,7 @@
 		(java.net 
 			DatagramSocket 
 			DatagramPacket        
-			InetAddress
-			UnknownHostException)
-		(java.io 
-			IOException
-			ByteArrayOutputStream)))
+			InetAddress)))
 
 (def magic (byte-array (map unchecked-byte (repeat 4 0xff))))
 
@@ -47,24 +43,20 @@
 		(str/split #"\\")
 		(apply hash-map)))		
 
-(defn strip-quotes [s]
-	(if (and (.startsWith s "\"")
-             (.endsWith s "\""))
-		(subs s 1 (dec (count s)))
-		s))
-
-(defn reorder-player-list [[score ping name-]]
-	[(strip-quotes name-) score ping])
+(defn clean-name [n]
+	"remove quotes, strip outer spaces, and color codes."
+	(str/replace n #"^\"|\"$" ""))
 
 (defn get-players [status-response]
 	(->> status-response 
 		(str/split-lines)
 		(drop 2)
-		(map #(str/split % #" "))
-		(map reorder-player-list)))
+		(map #(str/split % #" " 3))
+		(map #(vector (clean-name (nth % 2)) (first %) (second %)))))
 
 (defn pp-player [player-list] 
 	(println (str (first player-list) " " (second player-list) " " (nth player-list 2))))
+
 (defn pp-players [players-list] 
 	(doseq [p players-list] (pp-player p)))
 
