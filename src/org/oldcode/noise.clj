@@ -7,7 +7,7 @@
 	(def synth (MidiSystem/getSynthesizer))
 	(load-all-instruments! synth fluid-r3/sf2)
 
-	(midi-test synth) ; you should hear a nice-sounding piano
+	;;(midi-test synth) ; you should hear a nice-sounding piano
 
 	(load-patch synth 30)
 	(midi-test synth) ; you should hear a gnarly distorted guitar!

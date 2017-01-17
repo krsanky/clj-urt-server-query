@@ -24,12 +24,15 @@
 		(send-msg socket "getstatus" host port)
 
 		(let [buffer (byte-array 65507)
+              timeouts 0
               dpacket (new DatagramPacket buffer (count buffer) host' port)]
  
 			;; Decrease value speeds things up, increase slows things down.
-			(.setSoTimeout socket 10000)
-			;; this is where we should preempt check for the exc. case:
+			(.setSoTimeout socket 5000)
+
+			;;try java.net.SocketTimeoutException ...
 			(.receive socket dpacket)
+
 			(new String (.getData dpacket) 0 (.getLength dpacket)))))
 
 (defn get-status-urtctf []
