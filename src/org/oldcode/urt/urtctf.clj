@@ -7,10 +7,11 @@
 		(-> (sq/get-status-urtctf) 
 			(sq/get-players)
 			(count)
-			(>= 15))
+			(>= 24))
 		(do
 			(Thread/sleep 5000)
 			(println "not yet...")))
-	(println "ready..."))
+	(println "ready...")
+	(noise/test5))
 
 
