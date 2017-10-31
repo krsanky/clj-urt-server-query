@@ -1,17 +1,15 @@
 (ns org.oldcode.urt.urtctf
-	(:require [org.oldcode.urt.server-query :as sq]
-	          [org.oldcode.noise :as noise]))
+  (:require [org.oldcode.urt.server-query :as sq]
+            [org.oldcode.noise :as noise]))
 
 (defn poll-for-urtctf-slot []
-	(while
-		(-> (sq/get-status-urtctf) 
-			(sq/get-players)
-			(count)
-			(>= 24))
-		(do
-			(Thread/sleep 5000)
-			(println "not yet...")))
-	(println "ready...")
-	(noise/test5))
-
-
+  (while
+   (-> (sq/get-status-urtctf)
+       (sq/get-players)
+       (count)
+       (>= 24))
+    (do
+      (Thread/sleep 5000)
+      (println "not yet...")))
+  (println "ready...")
+  (noise/test5))
