@@ -1,7 +1,0 @@
-classes/
-lib/
-tmp/
-*.jar
-
-.gradle/
-.idea/
